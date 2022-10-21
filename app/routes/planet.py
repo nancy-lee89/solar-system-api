@@ -17,10 +17,29 @@ planet_bp = Blueprint("planet_bp", __name__, url_prefix="/planet")
 def get_all_planets():
     response = []
     for planet in planets:
-        planets_dict = {
+        planet_dict = {
             "id" : planet.id,
             "name" : planet.name,
             "description" : planet.description
         }
-        response.append(planets_dict)
+        response.append(planet_dict)
     return jsonify(response),200
+
+@planet_bp.route("/<planet_id>", methods=["GET"])
+def get_one_planet(planet_id):
+    try:
+        planet_id = int(planet_id)
+    except ValueError:
+        response_string = f"Invalid planet_id: '{planet_id}' must be an integer"
+        return jsonify({"message": response_string}), 400
+
+    for planet in planets:
+        if planet.id == planet_id:
+            planet_dict = {
+                "id" : planet.id,
+                "name" : planet.name,
+                "description" : planet.description
+            }
+            return jsonify(planet_dict), 200
+    response_message = f"Cound not find planet with ID {planet_id}"
+    return jsonify({"message": response_message}), 404
