@@ -59,5 +59,29 @@ def get_one_planet(planet_id):
     }
     return jsonify(planet_dict), 200
 
-# @planet_bp.route("/<planet_id>", methods=["PUT"])
-# def update_planet_with_new_vals(planet_id):
+@planet_bp.route("/<planet_id>", methods=["PUT"])
+def update_planet_with_new_vals(planet_id):
+
+    chosen_planet = get_one_planet_or_abort(planet_id)
+
+    request_body = request.get_json()
+
+    if "name" not in request_body or\
+    "description" not in request_body  or \
+    "size" not in request_body:
+        return jsonify({"message": "Request must include name, description and size"}, 404)
+
+    chosen_planet.name = request_body["name"]
+    chosen_planet.description = request_body["description"]
+    chosen_planet.size = request_body["size"]
+
+    db.session.commit()
+
+    return jsonify({"message": f"Successfully replaced planet with id '{planet_id}'"}), 200
+    
+@planet_bp.route("/<planet_id>", methods=["DELETE"])
+def delete_one_planet(planet_id):
+    chosen_planet = get_one_planet_or_abort(planet_id)
+    db.session.delete(chosen_planet)
+    db.session.commit()
+    return jsonify({"message": f"Successfully deleted planet with id '{planet_id}'"}), 200
