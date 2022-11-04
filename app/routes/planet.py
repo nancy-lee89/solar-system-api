@@ -40,12 +40,6 @@ def get_all_planets():
         planets = Planet.query.all()
     else:
         planets = Planet.query.filter_by(name=name_param)
-    #exrtra work
-    size_param = request.args.get("size")
-    if size_param is None:
-        planets = Planet.query.all()
-    else:
-        planets = Planet.query.filter_by(size=size_param)
     
     response = []
     for planet in planets:
